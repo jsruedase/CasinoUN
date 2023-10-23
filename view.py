@@ -1,6 +1,6 @@
 import controller
 from tkinter import *               #Importa la interfaz grafica
-from tkinter import messagebox
+from tkinter import messagebox      
 from PIL import ImageTk, Image      #Importa una libreria para abrir imágenes   
 
 # Creación de la interfaz gráfica usando Tkinter
@@ -38,11 +38,25 @@ def click():
         messagebox.showwarning("ERROR", "Debe ser mayor de edad para acceder")
     else:
         texto = controller.inicio_usuario(nombre_e.get(), cedula_e.get())
-        print(texto)
-        messagebox.showinfo("SUCCESS", texto)
-     
+        if texto != "El día de hoy ya ha jugado, vuelva otro día":
+            messagebox.showinfo("SUCCESS", texto)
+            boton_iniciar_sesion.destroy()
+            boton_listo.place(x = 550, y = 210)
+        else:
+            messagebox.showwarning("ERROR", texto)
+            raiz.destroy()
+
+def listo():
+    saldo = 500
+    informacion_usuario = Label(raiz, text= f"Usuario: {cedula_e.get()} \n Saldo: {saldo}", bg="dark red", font="Inkfree 20 italic")
+    informacion_usuario.place(x = 900, y = 20)
+    nombre_e.destroy()
+    edad_e.destroy()
+    cedula_e.destroy()
+    boton_listo.destroy()
+
 boton_iniciar_sesion = Button(raiz, text="Iniciar sesión", command=click)
 boton_iniciar_sesion.place(x = 550, y = 170)
+boton_listo = Button(raiz, text="Listo", command=listo)
 
-
-raiz.mainloop()
+raiz.mainloop() #Hace que la ventana siga abierta
