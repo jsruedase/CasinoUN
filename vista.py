@@ -37,7 +37,7 @@ def click():
     elif int(edad_e.get()) < 18:
         messagebox.showwarning("ERROR", "Debe ser mayor de edad para acceder")
     else:
-        texto = controller.inicio_usuario(nombre_e.get(), cedula_e.get())
+        texto = archivos_csv.inicio_usuario(nombre_e.get(), cedula_e.get())
         if texto != "El día de hoy ya ha jugado, vuelva otro día":
             messagebox.showinfo("SUCCESS", texto)
             boton_iniciar_sesion.destroy()
