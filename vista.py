@@ -1,4 +1,4 @@
-import controller
+import archivos_csv
 from tkinter import *               #Importa la interfaz grafica
 from tkinter import messagebox      
 from PIL import ImageTk, Image      #Importa una libreria para abrir imágenes   
