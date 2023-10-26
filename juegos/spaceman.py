@@ -4,7 +4,7 @@ import hashlib
 import random
 import string
 import hmac
-
+import random
 
 """
 Para la creación de este juego se toma la implementación del juego Crash del casino virtual Roobet, el cual tiene
@@ -15,66 +15,43 @@ hashes posteriores al ultimo conocido, lo que se hará será crear una lista con
 sesión de juego seleccionar un número aleatorio y coger los siguientes hashes en la lista desde ese número
 para simularlo.
 
+En este caso, se hará el encriptamiento mediante un string que será modificado cada vez que se abra el juego por parte 
+del usuario y se hasheará 200 veces para generar una lista de hashes, los cuales serán los game hashes que se darán al usuario
+para que luego se puedan comprobar con la función de que efectivamente el juego no está manipulado.
 """
-"""
-from hashlib import blake2b
-from hmac import compare_digest
-
-SECRET_KEY = b'pseudorandomly generated server secret key'
-AUTH_SIZE = 16
-
-def sign(cookie):
-    h = blake2b(digest_size=AUTH_SIZE, key=SECRET_KEY)
-    h.update(cookie)
-    return h.hexdigest().encode('utf-8')
-
-def verify(cookie, sig):
-    good_sig = sign(cookie)
-    return compare_digest(good_sig, sig)
-
-cookie = b'user-alice'
-sig = sign(cookie)
-print("{0},{1}".format(cookie.decode('utf-8'), sig))
-user-alice,b'43b3c982cf697e0c5ab22172d1ca7421'
-verify(cookie, sig)
-True
-verify(b'user-bob', sig)
-False
-verify(cookie, b'0102030405060708090a0b0c0d0e0f00')
-False
-
-"""
-salt = "0000000000000000000fa3b65e43e4240d71762a5bf397d5304b2596d116859c" #Hash del bloque de bitcoin #610546
-game_hash = "2c3025c09639326bd284c258882a28dae1cb169c0fb0d925149baa34c3e06cd1" #ultimo hash del sitio web 22-10
-game_hash3 = "4469ecc88f39a0db18ac6823c81147ae6d083c7fbf43867d0d6c28d7b2aade4a" #ultimo hash del sitio web 23-10
-primer_hash = "77b271fe12fca03c618f63dfb79d4105726ba9d4a25bb3f1964e435ccf9cb209"
-print(len(game_hash))
-
-
-
-def get_result(game_hash):
+def get_result(game_hash, string_original):
     hm = hmac.new(str.encode(game_hash), b'', hashlib.sha256)
-    hm.update(salt.encode("utf-8"))
+    hm.update(string_original.encode("utf-8"))
     h = hm.hexdigest()
     if (int(h, 16) % 33 == 0):
-        return 1
+        return 1                    #Hay un 3% aproximadamente de que se pierda el juego instantáneamente
     h = int(h[:13], 16)
     e = 2**52
     return (((100 * e - h) / (e-h)) // 1) / 100.0 , hm.hexdigest()
-
+        
 
 def get_prev_game(game_hash):
     m = hashlib.sha256()
     m.update(game_hash.encode("utf-8"))
     return m.hexdigest()
 
-def crear_lista_hashes():
-    hash_game = game_hash3
+def hashear(game_hash):
+    hasheado = hashlib.sha256((game_hash).encode()).hexdigest()
+    return hasheado
+
+def main():
+    lista_variaciones_string_original = ["god", "genio", "inteligente", "prodigio", "pro"]
+    num_random = random.randint(0, len(lista_variaciones_string_original)-1) #Da un numero aleatorio de 0 al numero de variaciones
+    string_original = f"Mendivelso es {lista_variaciones_string_original[num_random]}" 
+    hashi = hashear(string_original)
     lista_hashes = []
-    while hash_game != game_hash:
-        lista_hashes.append(hash_game)
-        hash_game = get_prev_game(hash_game)
+    i = 0
+    while i < 10:
+        hashi = hashear(hashi)
+        lista_hashes.append(hashi)
+        i+= 1
+    lista_hashes = lista_hashes[::-1] #Reversa la lista
+    return lista_hashes
 
-
-print(get_result("2c3025c09639326bd284c258882a28dae1cb169c0fb0d925149baa34c3e06cd1"))
-print(get_prev_game("ae51878b60ee20546553002a841a6567c6b16d02231f8c894d3e94b0d494914a"))
+print(main())
+print(get_prev_game('07fb2d908e0e9041dd8f5425e64857c4aef957daf7d87bac40534c871b606db2'))
