@@ -2,6 +2,7 @@ import archivos_csv
 from tkinter import *               #Importa la interfaz grafica
 from tkinter import messagebox      
 from PIL import ImageTk, Image      #Importa una libreria para abrir imágenes   
+from juegos import spaceman
 
 # Creación de la interfaz gráfica usando Tkinter
 raiz = Tk() 
@@ -46,17 +47,24 @@ def click():
             messagebox.showwarning("ERROR", texto)
             raiz.destroy()
 
+def astronaut():
+    spaceman.main(raiz, saldo)
+    
 def listo():
-    saldo = 500
+    global saldo  #Como después de que se inicialice sesión los juegos deben acceder al saldo, se declara como global.
+    saldo = 500   
     informacion_usuario = Label(raiz, text= f"Usuario: {cedula_e.get()} \n Saldo: {saldo}", bg="dark red", font="Inkfree 20 italic")
     informacion_usuario.place(x = 900, y = 20)
     nombre_e.destroy()
     edad_e.destroy()
     cedula_e.destroy()
     boton_listo.destroy()
-
+    boton_astronaut = Button(raiz, text="Astronaut", command=astronaut, height=5, width=20)
+    boton_astronaut.place(x = 550, y = 200)
+    
 boton_iniciar_sesion = Button(raiz, text="Iniciar sesión", command=click)
 boton_iniciar_sesion.place(x = 550, y = 170)
 boton_listo = Button(raiz, text="Listo", command=listo)
+boton_listo.place(x = 550, y = 210) ##############################################
 
 raiz.mainloop() #Hace que la ventana siga abierta
