@@ -18,6 +18,7 @@ En este caso, se hará el encriptamiento mediante un string que será modificado
 del usuario y se hasheará 100 veces para generar una lista de hashes, los cuales serán los game hashes que se darán al usuario
 para que luego se puedan comprobar con la función de que efectivamente el juego no está manipulado.
 """
+
 def get_result(game_hash, string_original):
     hm = hmac.new(str.encode(game_hash), b'', hashlib.sha256)
     hm.update(string_original.encode("utf-8"))
@@ -27,7 +28,7 @@ def get_result(game_hash, string_original):
     h = int(h[:13], 16)
     e = 2**52
     return (((100 * e - h) / (e-h)) // 1) / 100.0 #Funcion matemática con la que se obtiene el resultado de un juego a partir del hash. 
-                                                  #Tiene la propiedad de que la probabilidad de que salga un numero mayor a n es de 1 - 1/n
+                                                  #Tiene la propiedad de que la probabilidad de que salga un numero menor a n es de 1 - 1/n
         
 
 def get_prev_game(game_hash):
@@ -69,32 +70,45 @@ def main(raiz_view, saldo):
     raiz.geometry("1280x720")
     frame = Frame(raiz, width=600, height=400)
     frame.pack()
+    
     frame.place(anchor='center', relx=0.5, rely=0.5)
     img = ImageTk.PhotoImage(Image.open("space.jpg"))
     label = Label(frame, image = img)
     label.pack()
+    
+    img2 = ImageTk.PhotoImage(Image.open("astronauta_flotando.gif").resize((1280, 300)))
+    label2 = Label(raiz, image=img2)
+    label2.place(x=0, y=0)
+    
     titulo = Label(raiz, text="Astronaut", bg="white", font="Inkfree 20 bold")
     titulo.place(x = 550, y = 680)
     informacion_usuario = Label(raiz, text= f"Saldo: {saldo}", bg="white", font="Inkfree 20 italic")
     informacion_usuario.place(x = 1100, y = 500)
     
-    #Código que hace que funcione el gif del astronauta
-    def gif():
-        global img
-        img = Image.open("astronauta_flotando.gif")
-        label = Label(raiz)
-        label.place(x= 0, y= 0)
-        
-        for frame in ImageSequence.Iterator(img): #Se itera por el numero de frames que tiene el gif
-            frame = img.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
-            frame = ImageTk.PhotoImage(frame)
-            label.config(image=frame)
-            raiz.update() #Se actualiza en cada iteracion del frame el fondo
-        raiz.after(0, gif) #cada 0 segundos llama la funcion que hace que se actualice la ventana
-    gif()
+    #Código que hace que muestra cuánto va el multiplicador y hace funcionar el gif del astronauta flotando mientras el multiplicador siga aumentando. Al finalizar muestra la explosión.
+    global imagen
+    imagen = Image.open("astronauta_flotando.gif")        
+    label = Label(raiz)
+    label.place(x= 0, y= 0)
     
     def mostrar_resultado():
-        pass
+        multiplicador = 1 
+        contador_frame = 0
+        multiplicador_label = Label(raiz, text= f"x{multiplicador}", bg="white", font="Inkfree 20 bold", width=5)
+        multiplicador_label.place(x=580, y = 400)
+        while multiplicador < lista_results[1]: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
+            frame = ImageSequence.Iterator(imagen)[contador_frame] #Se actualiza el frame dependiendo de la condición si sigue aumentando el multiplicador
+            frame = imagen.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
+            frame = ImageTk.PhotoImage(frame)
+            label.config(image=frame)
+            multiplicador += 0.01
+            contador_frame+=1
+            multiplicador = round(multiplicador, 2)
+            multiplicador_label.config(text=f"x{multiplicador}")
+            time.sleep(0.05)
+            raiz.update() #Se actualiza tanto el frame del gif como el valor del multiplicador
+        label2.place(x=0, y=0)
+        raiz.update()
+        
     mostrar_resultado()
-            
     raiz.mainloop() 
