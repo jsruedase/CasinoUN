@@ -2,7 +2,6 @@ import hashlib
 import hmac         #Estas dos librerias sirven para encriptar usando hashes.
 import random
 import time
-import random
 from tkinter import *
 from tkinter import messagebox      
 from PIL import ImageTk, Image, ImageSequence #Este último es para hacer funcionar los gifs
@@ -62,9 +61,8 @@ def crear_lista_hashes_y_results():
     return lista_resultados, lista_hashes
 
 def main(raiz_view, saldo):
-
     lista_results, lista_hashes = crear_lista_hashes_y_results()
-    #Creación de la interfaz gráfica del juego.
+    #Creación de la interfaz gráfica del juego, se crean los labels, botones y entries.
     raiz = Toplevel(raiz_view) #crea otra ventana, pero dando prioridad a la principal, que sería el menú.
     raiz.title("Astronaut")
     raiz.geometry("1280x720")
@@ -82,33 +80,113 @@ def main(raiz_view, saldo):
     
     titulo = Label(raiz, text="Astronaut", bg="white", font="Inkfree 20 bold")
     titulo.place(x = 550, y = 680)
+    
     informacion_usuario = Label(raiz, text= f"Saldo: {saldo}", bg="white", font="Inkfree 20 italic")
     informacion_usuario.place(x = 1100, y = 500)
     
-    #Código que hace que muestra cuánto va el multiplicador y hace funcionar el gif del astronauta flotando mientras el multiplicador siga aumentando. Al finalizar muestra la explosión.
-    global imagen
-    imagen = Image.open("astronauta_flotando.gif")        
-    label = Label(raiz)
-    label.place(x= 0, y= 0)
+    celda_entry = Entry(raiz, width=20)
     
-    def mostrar_resultado():
+    modo_juego = "None"
+    
+    #Código que hace que funcione el gif de la explosion
+    def gif_explosion():
+        global img_explosion
+        img_explosion = Image.open("explosión.gif")
+        label_explosion = Label(raiz)
+        label_explosion.place(x= 500, y= 50)
+
+        for frame in ImageSequence.Iterator(img_explosion): #Se itera por el numero de frames que tiene el gif
+            #frame = img.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
+            frame = ImageTk.PhotoImage(frame)
+            
+            label_explosion.config(image=frame)
+            time.sleep(0.05)
+            raiz.update() #Se actualiza en cada iteracion del frame el fondo
+        label_explosion.destroy()
+
+
+ #Código que hace que muestra cuánto va el multiplicador y hace funcionar el gif del astronauta flotando mientras el multiplicador siga aumentando. Al finalizar muestra la explosión.
+    def mostrar_resultado(pos):
+        global imagen
+        imagen = Image.open("astronauta_flotando.gif")        
+        gif_label = Label(raiz)
+        gif_label.place(x= 0, y= 0)
         multiplicador = 1 
         contador_frame = 0
         multiplicador_label = Label(raiz, text= f"x{multiplicador}", bg="white", font="Inkfree 20 bold", width=5)
-        multiplicador_label.place(x=580, y = 400)
-        while multiplicador < lista_results[1]: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
+        multiplicador_label.place(x=580, y = 320)
+        while multiplicador < lista_results[pos]: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
+            if contador_frame == 150:   #Si se alcanza el numero de frames, que vuelva a empezar el gif
+                contador_frame = 0
             frame = ImageSequence.Iterator(imagen)[contador_frame] #Se actualiza el frame dependiendo de la condición si sigue aumentando el multiplicador
             frame = imagen.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
             frame = ImageTk.PhotoImage(frame)
-            label.config(image=frame)
+            gif_label.config(image=frame)
             multiplicador += 0.01
             contador_frame+=1
             multiplicador = round(multiplicador, 2)
             multiplicador_label.config(text=f"x{multiplicador}")
             time.sleep(0.05)
             raiz.update() #Se actualiza tanto el frame del gif como el valor del multiplicador
-        label2.place(x=0, y=0)
+        gif_label.destroy()
+        gif_explosion()
         raiz.update()
+
+    def manual():
+        boton_manual.destroy()
+        boton_automatico.destroy()
+        ingrese_apuesta = Label(raiz, text="Ingrese su apuesta:", bg="white", font="Inkfree 20 bold")
+        ingrese_apuesta.place(x=480, y=450)
+        celda_entry.place(x= 550, y = 500)
+        boton_stop = Button(raiz, text="STOP", command=stop, height=5, width=15)
+        boton_stop.place(x= 550, y = 550)
+        global modo_juego
+        modo_juego = "Manual"
+        juego()
         
-    mostrar_resultado()
+    def automatico():   
+        boton_automatico.destroy()
+        boton_manual.destroy()
+        ingrese_apuesta = Label(raiz, text="Ingrese su apuesta y\ndebajo el multiplicador:", bg="white", font="Inkfree 20 bold")
+        ingrese_apuesta.place(x=480, y=450)
+        celda_multiplicador = Entry(raiz, width=20)
+        celda_multiplicador.place(x= 550, y = 560)
+        celda_entry.place(x= 550, y = 530)
+        boton_listo = Button(raiz, text="LISTO", command=listo, height=5, width=15)
+        boton_listo.place(x= 550, y = 600)
+        global modo_juego
+        modo_juego = "Automatico"
+        juego() 
+    
+
+    def stop():
+        nonlocal saldo #Con global no funcionaba
+        
+        if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
+            celda_entry.insert(1, "")
+            messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+        else:
+            saldo -= float(celda_entry.get())
+            informacion_usuario.config(text=f"Saldo: {saldo}")
+            raiz.update()
+
+    def listo():
+        nonlocal saldo #Con global no funcionaba
+        
+        if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
+            celda_entry.insert(1, "")
+            messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+        else:
+            saldo -= float(celda_entry.get())
+            informacion_usuario.config(text=f"Saldo: {saldo}")
+            raiz.update()
+            
+    def juego():
+        mostrar_resultado(1)
+
+    boton_manual = Button(raiz, text="MANUAL", command=manual, height=5, width=20)
+    boton_manual.place(x=400, y=550)
+    
+    boton_automatico = Button(raiz, text="AUTOMATICO", command=automatico, height=5, width=20)
+    boton_automatico.place(x= 700, y = 550)
     raiz.mainloop() 
