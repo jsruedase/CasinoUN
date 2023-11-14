@@ -86,8 +86,6 @@ def main(raiz_view, saldo):
     
     celda_entry = Entry(raiz, width=20)
     
-    modo_juego = "None"
-    
     #Código que hace que funcione el gif de la explosion
     def gif_explosion():
         global img_explosion
@@ -104,10 +102,13 @@ def main(raiz_view, saldo):
             raiz.update() #Se actualiza en cada iteracion del frame el fondo
         label_explosion.destroy()
 
-
+    isrunning = True
+    multiplicador = 1
  #Código que hace que muestra cuánto va el multiplicador y hace funcionar el gif del astronauta flotando mientras el multiplicador siga aumentando. Al finalizar muestra la explosión.
     def mostrar_resultado(pos):
         global imagen
+        global multiplicador_global
+        global isrunning
         imagen = Image.open("astronauta_flotando.gif")        
         gif_label = Label(raiz)
         gif_label.place(x= 0, y= 0)
@@ -122,16 +123,20 @@ def main(raiz_view, saldo):
             frame = imagen.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
             frame = ImageTk.PhotoImage(frame)
             gif_label.config(image=frame)
+            multiplicador_global = multiplicador
             multiplicador += 0.01
             contador_frame+=1
             multiplicador = round(multiplicador, 2)
             multiplicador_label.config(text=f"x{multiplicador}")
             time.sleep(0.05)
+            isrunning = True
             raiz.update() #Se actualiza tanto el frame del gif como el valor del multiplicador
         gif_label.destroy()
         gif_explosion()
+        isrunning = False
         raiz.update()
 
+    #Configuraciones de la jugabilidad del juego:
     def manual():
         boton_manual.destroy()
         boton_automatico.destroy()
@@ -142,7 +147,7 @@ def main(raiz_view, saldo):
         boton_stop.place(x= 550, y = 550)
         global modo_juego
         modo_juego = "Manual"
-        juego()
+
         
     def automatico():   
         boton_automatico.destroy()
@@ -156,30 +161,36 @@ def main(raiz_view, saldo):
         boton_listo.place(x= 550, y = 600)
         global modo_juego
         modo_juego = "Automatico"
-        juego() 
-    
 
     def stop():
         nonlocal saldo #Con global no funcionaba
-        
+        global multiplicador_global
+        global isrunning
         if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
             celda_entry.insert(1, "")
             messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
         else:
-            saldo -= float(celda_entry.get())
-            informacion_usuario.config(text=f"Saldo: {saldo}")
+            if isrunning:
+                saldo+= round(float(celda_entry.get())*multiplicador_global,2)
+                informacion_usuario.config(text=f"Saldo: {saldo}")
+            else:
+                saldo -= float(celda_entry.get())
+                informacion_usuario.config(text=f"Saldo: {saldo}")
             raiz.update()
+
 
     def listo():
         nonlocal saldo #Con global no funcionaba
-        
-        if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
-            celda_entry.insert(1, "")
+        try:
+            if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
+                messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+            else:
+                saldo -= float(celda_entry.get())
+                informacion_usuario.config(text=f"Saldo: {saldo}")
+                raiz.update()
+        except:
             messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
-        else:
-            saldo -= float(celda_entry.get())
-            informacion_usuario.config(text=f"Saldo: {saldo}")
-            raiz.update()
+
             
     def juego():
         mostrar_resultado(1)
@@ -189,4 +200,5 @@ def main(raiz_view, saldo):
     
     boton_automatico = Button(raiz, text="AUTOMATICO", command=automatico, height=5, width=20)
     boton_automatico.place(x= 700, y = 550)
+    juego()
     raiz.mainloop() 

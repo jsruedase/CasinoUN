@@ -1,5 +1,4 @@
 import config as cf
-import model
 import time
 import datetime
 import csv
