@@ -1,4 +1,4 @@
-Id,Nombre,Cedula,Fecha,Dinero_inicial,Dinero_final,Dinero_ruleta,Dinero_juego2,Dinero_juego3,Ganancia_neta
+Id,Nombre,Cedula,Fecha,Dinero_inicial,Dinero_final,Dinero_spaceman,Dinero_juego2,Dinero_juego3,Ganancia_neta
 0,Juan,1014657732,2023-10-10,500,0,0,0,0,0
 1,KsKE,1014861795,2023-10-10,500,0,0,0,0,0
 2,Juan,1014861796,2023-10-10,500,0,0,0,0,0

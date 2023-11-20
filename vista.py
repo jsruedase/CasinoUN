@@ -48,12 +48,15 @@ def click():
             raiz.destroy()
 
 def astronaut():
-    spaceman.main(raiz, saldo)
+    global saldo
+    saldoS = spaceman.main(raiz, saldo)
+    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {saldoS}")
     
 def listo():
     global saldo  #Como después de que se inicialice sesión los juegos deben acceder al saldo, se declara como global.
-    saldo = 500   
-    informacion_usuario = Label(raiz, text= f"Usuario: {cedula_e.get()} \n Saldo: {saldo}", bg="dark red", font="Inkfree 20 italic")
+    global cedula
+    cedula = cedula_e.get()
+    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {saldo}")
     informacion_usuario.place(x = 900, y = 20)
     nombre_e.destroy()
     edad_e.destroy()
@@ -62,6 +65,8 @@ def listo():
     boton_astronaut = Button(raiz, text="Astronaut", command=astronaut, height=5, width=20)
     boton_astronaut.place(x = 550, y = 200)
     
+saldo = 500  
+informacion_usuario = Label(raiz, text="", bg="dark red", font="Inkfree 20 italic")
 boton_iniciar_sesion = Button(raiz, text="Iniciar sesión", command=click)
 boton_iniciar_sesion.place(x = 550, y = 170)
 boton_listo = Button(raiz, text="Listo", command=listo)

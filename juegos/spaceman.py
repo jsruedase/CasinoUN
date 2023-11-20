@@ -110,6 +110,7 @@ def main(raiz_view, saldo):
         global multiplicador_global
         global isrunning
         global resultado 
+        global boolean
         resultado = lista_results[pos]
         imagen = Image.open("astronauta_flotando.gif")        
         gif_label = Label(raiz)
@@ -123,6 +124,8 @@ def main(raiz_view, saldo):
         while multiplicador <= resultado and isrunning: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
             if contador_frame == 150:   #Si se alcanza el numero de frames, que vuelva a empezar el gif
                 contador_frame = 0
+            if not boolean:
+                break
             frame = ImageSequence.Iterator(imagen)[contador_frame] #Se actualiza el frame dependiendo de la condición si sigue aumentando el multiplicador
             frame = imagen.resize((1280, 300)) #Se ajusta para que quede en la parte superior de la pantalla
             frame = ImageTk.PhotoImage(frame)
@@ -231,18 +234,27 @@ def main(raiz_view, saldo):
     def skip():
         global isrunning
         isrunning = False
-            
+    
+
     def juego():
         nonlocal saldo
-        for i in range(0, len(lista_results)-1):
-            boton_listo.config(state=NORMAL)
-            boton_stop.config(state=DISABLED)
-            boton_confirmar.config(state=NORMAL)
-            boton_skip.place_forget()
-            mostrar_resultado(i)
-            informacion_usuario.config(text=f"Saldo: ${saldo}")
-            raiz.update()
-            
+        global boolean
+        boolean = True
+        i = 0
+        while i < len(lista_results)-1 and boolean:
+                boton_listo.config(state=NORMAL)
+                boton_stop.config(state=DISABLED)
+                boton_confirmar.config(state=NORMAL)
+                boton_skip.place_forget() #Oculta el skip
+                mostrar_resultado(i)
+                informacion_usuario.config(text=f"Saldo: ${saldo}")
+                raiz.update()
+
+    def fin():
+        nonlocal saldo
+        global boolean
+        boolean = False
+        
 
     boton_manual = Button(raiz, text="MANUAL", command=manual, height=5, width=20)
     boton_manual.place(x=400, y=550)
@@ -254,6 +266,13 @@ def main(raiz_view, saldo):
     boton_listo = Button(raiz, text="LISTO", command=listo, height=5, width=15)
     boton_confirmar = Button(raiz, text="Confirmar apuesta", command=confirmar)
     boton_skip = Button(raiz, text="Skip", command=skip)
+    boton_salir = Button(raiz, text="Salir del juego", command=fin, height=5, width=15)
+    boton_salir.place(x= 1100, y = 320)
+    
     
     juego()
-    raiz.mainloop() 
+    raiz.destroy()
+    print("Listo")
+    return saldo 
+    raiz.wait_window(raiz)
+
