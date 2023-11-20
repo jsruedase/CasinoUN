@@ -81,10 +81,11 @@ def main(raiz_view, saldo):
     titulo = Label(raiz, text="Astronaut", bg="white", font="Inkfree 20 bold")
     titulo.place(x = 550, y = 680)
     
-    informacion_usuario = Label(raiz, text= f"Saldo: {saldo}", bg="white", font="Inkfree 20 italic")
+    informacion_usuario = Label(raiz, text=f"Saldo: ${saldo}", bg="white", font="Inkfree 20 italic")
     informacion_usuario.place(x = 1100, y = 500)
     
     celda_entry = Entry(raiz, width=20)
+    celda_multiplicador = Entry(raiz, width=20)
     
     #Código que hace que funcione el gif de la explosion
     def gif_explosion():
@@ -102,21 +103,24 @@ def main(raiz_view, saldo):
             raiz.update() #Se actualiza en cada iteracion del frame el fondo
         label_explosion.destroy()
 
-    isrunning = True
-    multiplicador = 1
+
  #Código que hace que muestra cuánto va el multiplicador y hace funcionar el gif del astronauta flotando mientras el multiplicador siga aumentando. Al finalizar muestra la explosión.
     def mostrar_resultado(pos):
         global imagen
         global multiplicador_global
         global isrunning
+        global resultado 
+        resultado = lista_results[pos]
         imagen = Image.open("astronauta_flotando.gif")        
         gif_label = Label(raiz)
         gif_label.place(x= 0, y= 0)
-        multiplicador = 1 
+        previous_label = Label(raiz,  text=f"Anterior juego: \n x{resultado}", bg="white", font="Inkfree 20 bold")
+        multiplicador = 0
         contador_frame = 0
         multiplicador_label = Label(raiz, text= f"x{multiplicador}", bg="white", font="Inkfree 20 bold", width=5)
         multiplicador_label.place(x=580, y = 320)
-        while multiplicador < lista_results[pos]: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
+        isrunning = True
+        while multiplicador <= resultado and isrunning: #Mientras el multiplicador no supere el monto, el gif funciona y va aumentando 0.01
             if contador_frame == 150:   #Si se alcanza el numero de frames, que vuelva a empezar el gif
                 contador_frame = 0
             frame = ImageSequence.Iterator(imagen)[contador_frame] #Se actualiza el frame dependiendo de la condición si sigue aumentando el multiplicador
@@ -128,10 +132,20 @@ def main(raiz_view, saldo):
             contador_frame+=1
             multiplicador = round(multiplicador, 2)
             multiplicador_label.config(text=f"x{multiplicador}")
-            time.sleep(0.05)
+            if multiplicador <= 2:
+                time.sleep(0.07)
+            elif multiplicador > 2 and multiplicador <= 5:
+                time.sleep(0.05)
+            elif multiplicador > 5 and multiplicador <= 10:
+                time.sleep(0.03)
+            else:
+                time.sleep(0.01)
             isrunning = True
             raiz.update() #Se actualiza tanto el frame del gif como el valor del multiplicador
+        multiplicador_global = 1
         gif_label.destroy()
+        previous_label.place(x= 200, y=500)
+        previous_label.update()
         gif_explosion()
         isrunning = False
         raiz.update()
@@ -143,8 +157,8 @@ def main(raiz_view, saldo):
         ingrese_apuesta = Label(raiz, text="Ingrese su apuesta:", bg="white", font="Inkfree 20 bold")
         ingrese_apuesta.place(x=480, y=450)
         celda_entry.place(x= 550, y = 500)
-        boton_stop = Button(raiz, text="STOP", command=stop, height=5, width=15)
         boton_stop.place(x= 550, y = 550)
+        boton_confirmar.place(x=700, y=500)
         global modo_juego
         modo_juego = "Manual"
 
@@ -154,51 +168,92 @@ def main(raiz_view, saldo):
         boton_manual.destroy()
         ingrese_apuesta = Label(raiz, text="Ingrese su apuesta y\ndebajo el multiplicador:", bg="white", font="Inkfree 20 bold")
         ingrese_apuesta.place(x=480, y=450)
-        celda_multiplicador = Entry(raiz, width=20)
         celda_multiplicador.place(x= 550, y = 560)
         celda_entry.place(x= 550, y = 530)
-        boton_listo = Button(raiz, text="LISTO", command=listo, height=5, width=15)
-        boton_listo.place(x= 550, y = 600)
+        boton_listo.place(x= 550, y = 590)
         global modo_juego
         modo_juego = "Automatico"
 
+    def confirmar():
+        nonlocal saldo
+        global multiplicador_global
+        if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
+            celda_entry.insert(1, "")
+            messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+        else:
+            if multiplicador_global >= 1:
+                messagebox.showwarning("ERROR", "Ya ha pasado el tiempo de apuesta")
+                boton_skip.place(x= 700, y = 550)
+            else:
+                saldo -= float(celda_entry.get())
+                informacion_usuario.config(text=f"Saldo: ${saldo}")
+                raiz.update()
+                boton_stop.config(state=NORMAL)
+                boton_confirmar.config(state=DISABLED)
+            
     def stop():
         nonlocal saldo #Con global no funcionaba
         global multiplicador_global
         global isrunning
+        boton_stop.config(state=DISABLED)
+        saldo+=float(celda_entry.get())
+        boton_skip.place(x= 700, y = 550)
         if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
             celda_entry.insert(1, "")
             messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
         else:
             if isrunning:
+                saldo-=float(celda_entry.get())
                 saldo+= round(float(celda_entry.get())*multiplicador_global,2)
-                informacion_usuario.config(text=f"Saldo: {saldo}")
+
             else:
                 saldo -= float(celda_entry.get())
-                informacion_usuario.config(text=f"Saldo: {saldo}")
-            raiz.update()
-
-
+                
     def listo():
         nonlocal saldo #Con global no funcionaba
-        try:
-            if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
-                messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+        global resultado
+        global isrunning
+        global multiplicador_global
+        boton_listo.config(state=DISABLED)
+        boton_skip.place(x= 700, y = 550)
+        if float(celda_entry.get()) < 0 or float(celda_entry.get()) > saldo:
+            messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
+        else:
+            if multiplicador_global >= 1:
+                messagebox.showwarning("ERROR", "Ya ha pasado el tiempo de apuesta")
+            elif float(celda_multiplicador.get()) <= resultado:
+                saldo-=float(celda_entry.get())
+                saldo+= round(float(celda_entry.get())*float(celda_multiplicador.get()),2)
+                
             else:
                 saldo -= float(celda_entry.get())
-                informacion_usuario.config(text=f"Saldo: {saldo}")
-                raiz.update()
-        except:
-            messagebox.showwarning("ERROR", "Ingrese un valor entre 0 y su saldo actual")
-
+    
+    def skip():
+        global isrunning
+        isrunning = False
             
     def juego():
-        mostrar_resultado(1)
+        nonlocal saldo
+        for i in range(0, len(lista_results)-1):
+            boton_listo.config(state=NORMAL)
+            boton_stop.config(state=DISABLED)
+            boton_confirmar.config(state=NORMAL)
+            boton_skip.place_forget()
+            mostrar_resultado(i)
+            informacion_usuario.config(text=f"Saldo: ${saldo}")
+            raiz.update()
+            
 
     boton_manual = Button(raiz, text="MANUAL", command=manual, height=5, width=20)
     boton_manual.place(x=400, y=550)
     
     boton_automatico = Button(raiz, text="AUTOMATICO", command=automatico, height=5, width=20)
     boton_automatico.place(x= 700, y = 550)
+    
+    boton_stop = Button(raiz, text="STOP", command=stop, height=5, width=15)
+    boton_listo = Button(raiz, text="LISTO", command=listo, height=5, width=15)
+    boton_confirmar = Button(raiz, text="Confirmar apuesta", command=confirmar)
+    boton_skip = Button(raiz, text="Skip", command=skip)
+    
     juego()
     raiz.mainloop() 
