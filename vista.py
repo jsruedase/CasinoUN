@@ -1,4 +1,4 @@
-import archivos_csv
+import archivos_csv                 #Importa el archivo donde se trabaja la base de datos
 from tkinter import *               #Importa la interfaz grafica
 from tkinter import messagebox      
 from PIL import ImageTk, Image      #Importa una libreria para abrir imágenes   
@@ -49,8 +49,8 @@ def click():
 
 def astronaut():
     global saldo
-    saldoS = spaceman.main(raiz, saldo)
-    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {saldoS}")
+    saldo = spaceman.main(raiz, saldo)
+    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {saldo}")
     
 def listo():
     global saldo  #Como después de que se inicialice sesión los juegos deben acceder al saldo, se declara como global.
