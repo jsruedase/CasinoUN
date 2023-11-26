@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
 import random
-from tkinter import ttk  # Agregada importación para el combobox
-from juegos import spaceman
 
 # Cargar la base de datos
 base_datos = pd.read_csv('base_datos.csv')
@@ -20,32 +18,32 @@ rondas_totales = 10
 ronda_actual = 1
 
 def registrar_jugadores():
-    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-    try:
-        num_jugadores_registrados = int(num_players_entry.get())
-        jugadores_registrados = []
-        registrar_button.config(state=tk.NORMAL)  # Habilitar el botón de registrar jugador
-        registrar_jugador()
-    except ValueError:
-        messagebox.showerror("Error", "Por favor, ingresa un número válido para el número de jugadores.")
+  global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
+  try:
+      num_jugadores_registrados = int(num_players_entry.get())
+      jugadores_registrados = []
+      registrar_button.config(state=tk.NORMAL)  # Habilitar el botón de registrar jugador
+      registrar_jugador()
+  except ValueError:
+      messagebox.showerror("Error", "Por favor, ingresa un número válido para el número de jugadores.")
 
 def registrar_jugador():
-    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-    if num_jugador_actual < num_jugadores_registrados:
-        cedula = cedula_entry.get().strip()
-        if cedula in jugadores and cedula not in jugadores_registrados:
-            jugadores_registrados.append(cedula)
-            num_jugador_actual += 1
-            cedula_entry.delete(0, tk.END)
-            if num_jugador_actual == num_jugadores_registrados:
-                iniciar_juego()
-            else:
-                registrar_jugador()
-        else:
-            messagebox.showerror("Error", "La cédula no está registrada o ya se ha registrado. Inténtalo de nuevo.")
-    else:
-        messagebox.showinfo("Información", "Todos los jugadores han sido registrados.")
-        registrar_button.config(state=tk.DISABLED)  # Inhabilitar el botón de registrar jugador cuando todos están registrados
+  global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
+  if num_jugador_actual < num_jugadores_registrados:
+      cedula = cedula_entry.get().strip()
+      if cedula in jugadores and cedula not in jugadores_registrados:
+          jugadores_registrados.append(cedula)
+          num_jugador_actual += 1
+          cedula_entry.delete(0, tk.END)
+          if num_jugador_actual == num_jugadores_registrados:
+              iniciar_juego()
+          else:
+              registrar_jugador()
+      else:
+          messagebox.showerror("Error", "La cédula no está registrada o ya se ha registrado. Inténtalo de nuevo.")
+  else:
+      messagebox.showinfo("Información", "Todos los jugadores han sido registrados.")
+      registrar_button.config(state=tk.DISABLED)  # Inhabilitar el botón de registrar jugador cuando todos están registrados
 
 
 def iniciar_juego():
@@ -201,10 +199,6 @@ tablero_text.pack()
 # Botones adicionales
 jugar_nuevamente_button = tk.Button(root, text="Jugar Nuevamente", command=jugar_nuevamente)
 jugar_nuevamente_button.pack()
-
-# Botón para jugar Sic Bo
-jugar_sic_bo_button = tk.Button(root, text="Jugar Sic Bo", command=spaceman)  # Añadido el botón para jugar Sic Bo
-jugar_sic_bo_button.pack()
 
 salir_button = tk.Button(root, text="Salir", command=salir)
 salir_button.pack()
