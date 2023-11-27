@@ -82,7 +82,7 @@ def main(raiz_view, saldo):
     titulo.place(x = 550, y = 680)
     
     informacion_usuario = Label(raiz, text=f"Saldo: ${saldo}", bg="white", font="Inkfree 20 italic")
-    informacion_usuario.place(x = 1100, y = 500)
+    informacion_usuario.place(x = 1000, y = 500)
     
     celda_entry = Entry(raiz, width=20)
     celda_multiplicador = Entry(raiz, width=20)
@@ -189,6 +189,7 @@ def main(raiz_view, saldo):
                 boton_skip.place(x= 700, y = 550)
             else:
                 saldo -= float(celda_entry.get())
+                saldo = round(saldo,2)
                 informacion_usuario.config(text=f"Saldo: ${saldo}")
                 raiz.update()
                 boton_stop.config(state=NORMAL)
@@ -208,9 +209,11 @@ def main(raiz_view, saldo):
             if isrunning:
                 saldo-=float(celda_entry.get())
                 saldo+= round(float(celda_entry.get())*multiplicador_global,2)
+                saldo = round(saldo,2)
 
             else:
                 saldo -= float(celda_entry.get())
+                saldo = round(saldo,2)
                 
     def listo():
         nonlocal saldo #Con global no funcionaba
@@ -227,9 +230,11 @@ def main(raiz_view, saldo):
             elif float(celda_multiplicador.get()) <= resultado:
                 saldo-=float(celda_entry.get())
                 saldo+= round(float(celda_entry.get())*float(celda_multiplicador.get()),2)
+                saldo = round(saldo,2)
                 
             else:
                 saldo -= float(celda_entry.get())
+                saldo = round(saldo,2)
     
     def skip():
         global isrunning
@@ -249,6 +254,7 @@ def main(raiz_view, saldo):
                 mostrar_resultado(i)
                 informacion_usuario.config(text=f"Saldo: ${saldo}")
                 raiz.update()
+                i+=1
 
     def fin():
         nonlocal saldo

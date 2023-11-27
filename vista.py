@@ -50,7 +50,8 @@ def click():
 def astronaut():
     global saldo
     saldo = spaceman.main(raiz, saldo)
-    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {saldo}")
+    archivos_csv.modificar_csv("Dinero_astronaut", round(saldo-saldoi,2))
+    informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {round(saldo, 2)}")
     
 def listo():
     global saldo  #Como después de que se inicialice sesión los juegos deben acceder al saldo, se declara como global.
@@ -64,12 +65,24 @@ def listo():
     boton_listo.destroy()
     boton_astronaut = Button(raiz, text="Astronaut", command=astronaut, height=5, width=20)
     boton_astronaut.place(x = 550, y = 200)
+    boton_mostrar_stats.place(x = 1000, y = 200)
     
-saldo = 500  
+def salir():
+    archivos_csv.actualizar()
+    #raiz.destroy()
+
+def stats():
+    archivos_csv.mostrar_estadisticas(cedula)
+
+saldo = 5000    #Variable que va a ir cambiando en el menu
+saldoi = 5000   #Todos los jugadores empiezan con 5000
 informacion_usuario = Label(raiz, text="", bg="dark red", font="Inkfree 20 italic")
 boton_iniciar_sesion = Button(raiz, text="Iniciar sesión", command=click)
 boton_iniciar_sesion.place(x = 550, y = 170)
 boton_listo = Button(raiz, text="Listo", command=listo)
+boton_salir = Button(raiz, text="SALIR", command=salir)
+boton_mostrar_stats = Button(raiz, text="Ver tus \nestadísticas", command=stats, height=5, width=20)
+boton_salir.place(x = 1000, y = 100)
 boton_listo.place(x = 550, y = 210) ##############################################
 
 raiz.mainloop() #Hace que la ventana siga abierta
