@@ -10,7 +10,7 @@ Lenguaje a utilizar: Python
 - Investigar sobre las funciones matemáticas que son usadas en los juegos de azar, lo que involucra temas de probabilidad y estadística, para luego implementarlas en código.
 - Crear una interfaz gráfica donde el usuario interactúe con los juegos e idealmente donde pueda haber un método de pago.
 - Desarrollar tres juegos donde haya una interacción con el usuario directamente y graficarlos.
-- Recopilar la información de los usuarios junto con estadísticas de los juegos que jugó con librerías externas y archivos xlsx.
+- Recopilar la información de los usuarios junto con estadísticas de los juegos que jugó con librerías externas y archivos csv.
 
 **2. Metas del proyecto:**
 
