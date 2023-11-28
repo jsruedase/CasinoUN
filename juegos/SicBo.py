@@ -4,7 +4,7 @@ import pandas as pd
 import random
 
 def main(raiz_view, saldo):
-     # Cargar la base de datos
+    # Cargar la base de datos
     base_datos = pd.read_csv('base_datos.csv')
 
     # Crear el diccionario de jugadores
@@ -70,25 +70,25 @@ def main(raiz_view, saldo):
         mostrar_puntuaciones()
 
     def jugar_nuevamente():
-      global ronda_actual, num_jugador_actual
-      ronda_actual = 1
-      num_jugador_actual = 0
-      for cedula in jugadores:
-          jugadores[cedula]['Dinero_inicial'] = 5000  # Reinicia el dinero inicial a 5000
-          jugadores[cedula]['Dinero_juego2'] = 0
-      actualizar_labels()
-      apuesta_entry_dinero.delete(0, tk.END)
-      apuesta_entry.delete(0, tk.END)
-      tablero_text.delete(1.0, tk.END)
-      iniciar_juego()
+        global ronda_actual, num_jugador_actual
+        ronda_actual = 1
+        num_jugador_actual = 0
+        for cedula in jugadores:
+            jugadores[cedula]['Dinero_inicial'] = 5000  # Reinicia el dinero inicial a 5000
+            jugadores[cedula]['Dinero_juego2'] = 0
+        actualizar_labels()
+        apuesta_entry_dinero.delete(0, tk.END)
+        apuesta_entry.delete(0, tk.END)
+        tablero_text.delete(1.0, tk.END)
+        iniciar_juego()
 
     def salir():
-      # Actualizar la base de datos antes de salir
-      for cedula in jugadores:
-          base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_inicial'] = jugadores[cedula]['Dinero_inicial']
-          base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_juego2'] = jugadores[cedula]['Dinero_juego2']
-      base_datos.to_csv('base_datos.csv', index=False)
-      root.destroy()
+        # Actualizar la base de datos antes de salir
+        for cedula in jugadores:
+            base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_inicial'] = jugadores[cedula]['Dinero_inicial']
+            base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_juego2'] = jugadores[cedula]['Dinero_juego2']
+        base_datos.to_csv('base_datos.csv', index=False)
+        root.destroy()
 
     def mostrar_puntuaciones():
         tablero_text.insert(tk.END, "\nTabla de Puntuaciones:\n")
@@ -104,16 +104,21 @@ def main(raiz_view, saldo):
         apuesta_label.config(text=f"Apuesta - Ronda {ronda_actual}:")
 
     # Crear la ventana principal
-    raiz = Toplevel(raiz_view) #crea otra ventana, pero dando prioridad a la principal, que sería el menú.
+    root = tk.Toplevel(raiz_view)  # crea otra ventana, pero dando prioridad a la principal, que sería el menú.
     root.title("Sic Bo Game")
     root.geometry("400x400")
 
     # Etiquetas
     dados_label = tk.Label(root, text="¡Bienvenido a Sic Bo!")
     dados_label.pack()
-    saldo_label = tk.Label(root, text="Saldo: $0", font=("Arial", 12), bg="#1E2124", fg="white")
+    saldo_label = tk.Label(root, text=f"Saldo: ${saldo}", font=("Arial", 12), bg="#1E2124", fg="white")
     saldo_label.place(x=340, y=10)  # Ajustar la posición según sea necesario
 
+    apuesta_dados_label = tk.Label(root, text="Apuesta de Dados:")
+    apuesta_dados_label.pack()
+
+    apuesta_entry_dados = tk.Entry(root)
+    apuesta_entry_dados.pack()
 
     apuesta_label_dinero = tk.Label(root, text="Ingrese su apuesta de dinero (40000-160000):")
     apuesta_label_dinero.pack()
@@ -121,7 +126,7 @@ def main(raiz_view, saldo):
     apuesta_entry_dinero = tk.Entry(root)
     apuesta_entry_dinero.pack()
 
-    apuesta_label = tk.Label(root, text="")
+    apuesta_label = tk.Label(root, text="Apuesta:")
     apuesta_label.pack()
 
     apuesta_entry = tk.Entry(root)
@@ -144,11 +149,11 @@ def main(raiz_view, saldo):
     # Función para aplicar estilos de casino
     def aplicar_estilos_casino():
         root.configure(bg='#1E2124')  # Color de fondo oscuro
-        etiquetas = [dados_label, apuesta_label_dinero, apuesta_label]
+        etiquetas = [dados_label, apuesta_dados_label, apuesta_label_dinero, apuesta_label]
         for etiqueta in etiquetas:
             etiqueta.configure(fg='white', bg='#1E2124')  # Texto blanco sobre fondo oscuro
 
-        entradas = [apuesta_entry_dinero, apuesta_entry]
+        entradas = [apuesta_entry_dados, apuesta_entry_dinero, apuesta_entry]
         for entrada in entradas:
             entrada.configure(fg='black', bg='white')  # Texto negro sobre fondo claro
 
