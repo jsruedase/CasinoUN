@@ -1,5 +1,4 @@
 import config as cf
-import time
 import datetime
 import csv
 import pandas as pd
@@ -81,4 +80,23 @@ def mostrar_estadisticas(cedula):
     plt.tight_layout()  # Ajustar el diseño del gráfico
     plt.show()
 
+def mostrar_ganancia_media_juego():
+    df = pd.read_csv(file)  
+    num_registros = len(input_file)
+    suma_astronaut = sum(df["Dinero_astronaut"])
+    suma_21 = sum(df["Dinero_21"])
+    suma_SicBo = sum(df["Dinero_SicBo"])
+
+    dict_sumas = {"Juegos": ["Astronaut", "BlackJack", "SicBo"],
+                  "Promedio": [round(suma_astronaut/num_registros,2),round(suma_21/num_registros,2),round(suma_SicBo/num_registros,2)]
+                  }
+    df2 = pd.DataFrame(dict_sumas)
+    plt.figure(figsize=(10, 6))  # Ajusta el tamaño del gráfico 
+    plt.bar(df2['Juegos'], df2['Promedio'])
+    plt.title('Promedio en COP por juego:')
+    plt.xlabel('Juegos')
+    plt.ylabel('Promedio (COP)')
+    plt.show()
+    
+    print(df2)
 actualizar()
