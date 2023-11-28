@@ -120,17 +120,11 @@ def main(raiz_view, saldo):
     apuesta_entry_dados = tk.Entry(root)
     apuesta_entry_dados.pack()
 
-    apuesta_label_dinero = tk.Label(root, text="Ingrese su apuesta de dinero (40000-160000):")
+    apuesta_label_dinero = tk.Label(root, text="Ingrese su apuesta de dinero:")
     apuesta_label_dinero.pack()
 
     apuesta_entry_dinero = tk.Entry(root)
     apuesta_entry_dinero.pack()
-
-    apuesta_label = tk.Label(root, text="Apuesta:")
-    apuesta_label.pack()
-
-    apuesta_entry = tk.Entry(root)
-    apuesta_entry.pack()
 
     apostar_button = tk.Button(root, text="Apostar", command=realizar_apuesta, state=tk.DISABLED)
     apostar_button.pack()
