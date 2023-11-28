@@ -104,7 +104,7 @@ def main(raiz_view, saldo):
         apuesta_label.config(text=f"Apuesta - Ronda {ronda_actual}:")
 
     # Crear la ventana principal
-    root = tk.Tk()
+    raiz = Toplevel(raiz_view) #crea otra ventana, pero dando prioridad a la principal, que sería el menú.
     root.title("Sic Bo Game")
     root.geometry("400x400")
 
