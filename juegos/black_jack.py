@@ -27,6 +27,7 @@ def main(raiz_view, saldo):
     cartas_cpu3 = []
     global cartas_ganadas
     cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
+    global rondas_ganadas
     rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
     global numero_ronda
     numero_ronda = 1
