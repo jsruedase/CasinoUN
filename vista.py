@@ -2,7 +2,7 @@ import archivos_csv                 #Importa el archivo donde se trabaja la base
 from tkinter import *               #Importa la interfaz grafica
 from tkinter import messagebox      
 from PIL import ImageTk, Image      #Importa una libreria para abrir imágenes   
-from juegos import spaceman
+from juegos import spaceman, SicBo, black_jack
 
 # Creación de la interfaz gráfica usando Tkinter
 raiz = Tk() 
@@ -53,6 +53,14 @@ def astronaut():
     archivos_csv.modificar_csv("Dinero_astronaut", round(saldo-saldoi,2))
     informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {round(saldo, 2)}")
     
+def sicBo():
+    global saldo
+    SicBo.main(raiz, saldo)
+    
+def blackJack():
+    global saldo
+    black_jack.main(raiz, saldo)
+
 def listo():
     global saldo  #Como después de que se inicialice sesión los juegos deben acceder al saldo, se declara como global.
     global cedula
@@ -63,8 +71,16 @@ def listo():
     edad_e.destroy()
     cedula_e.destroy()
     boton_listo.destroy()
+    
     boton_astronaut = Button(raiz, text="Astronaut", command=astronaut, height=5, width=20)
     boton_astronaut.place(x = 550, y = 200)
+    
+    boton_sicbo = Button(raiz, text="SicBo", command=sicBo, height=5, width=20)
+    boton_sicbo.place(x = 550, y = 300)
+    
+    boton_sicbo = Button(raiz, text="BlackJack", command=blackJack, height=5, width=20)
+    boton_sicbo.place(x = 550, y = 400)
+    
     boton_mostrar_stats.place(x = 1000, y = 200)
     boton_mostrar_stats_juego.place(x = 1000, y = 300)
     
