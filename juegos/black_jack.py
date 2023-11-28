@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
-
 def main(raiz_view, saldo):
     baraja = [
         '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A',
@@ -13,7 +12,7 @@ def main(raiz_view, saldo):
     baraja_inicial = baraja.copy()
 
     # Crear la ventana principal
-    root = tk.Toplevel(raiz_view)
+    root = tk.Tk()
     root.title("Blackjack Game")
     root.geometry("800x600")
     root.configure(bg="#001a4d")  # Color de fondo de neon
@@ -25,11 +24,8 @@ def main(raiz_view, saldo):
     cartas_cpu1 = []
     cartas_cpu2 = []
     cartas_cpu3 = []
-    global cartas_ganadas
     cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-    global rondas_ganadas
     rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-    global numero_ronda
     numero_ronda = 1
 
     # Interfaz gráfica
@@ -69,7 +65,7 @@ def main(raiz_view, saldo):
     label_cartas_cpu3.pack()
 
     label_saldo = tk.Label(root, text=f"Saldo: {saldo}", font=label_font, bg="#001a4d", fg="white")
-    label_saldo.place(x= 680, y= 10)
+    label_saldo.place(x=680, y=10)
 
     # Etiqueta para el número de ronda
     label_numero_ronda = tk.Label(root, text=f"Ronda: {numero_ronda}", font=label_font, bg="#001a4d", fg="white")
@@ -78,71 +74,6 @@ def main(raiz_view, saldo):
     # Tabla de cartas ganadas
     tabla_cartas_ganadas = tk.Text(root, height=10, width=30, font=small_label_font, bg="#001a4d", fg="white")
     tabla_cartas_ganadas.pack(side=tk.RIGHT, padx=10, pady=10)
-
-    def nueva_partida():
-        global baraja, cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3, cartas_ganadas, rondas_ganadas, numero_ronda
-        baraja = baraja_inicial.copy()
-        cartas_jugador = []
-        cartas_dealer = []
-        cartas_cpu1 = []
-        cartas_cpu2 = []
-        cartas_cpu3 = []
-        cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-        rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-        numero_ronda += 1
-        habilitar_botones()
-        repartir_cartas_iniciales()
-        ocultar_cartas_cpu()  # Nueva línea para ocultar las cartas de los CPU
-        actualizar_labels()
-
-    def habilitar_botones():
-        button_pedir["state"] = "active"
-        button_plantarse["state"] = "active"
-        if numero_ronda < 30:
-            button_nueva_partida["state"] = "disabled"
-        else:
-            button_nueva_partida["state"] = "active"
-
-    def repartir_cartas_iniciales():
-        global cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3
-
-        cartas_jugador = [extraer_carta(), extraer_carta()]
-        cartas_dealer = [extraer_carta(), extraer_carta()]
-        cartas_cpu1 = [extraer_carta(), extraer_carta()]
-        cartas_cpu2 = [extraer_carta(), extraer_carta()]
-        cartas_cpu3 = [extraer_carta(), extraer_carta()]
-
-        if sumar_cartas(cartas_jugador) == 21 or sumar_cartas(cartas_dealer) == 21 or sumar_cartas(cartas_cpu1) == 21 or sumar_cartas(cartas_cpu2) == 21 or sumar_cartas(cartas_cpu3) == 21:
-            determinar_ganador_21()
-
-    def determinar_ganador_21():
-        global cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3
-        resultado = []
-
-        if sumar_cartas(cartas_jugador) == 21:
-            resultado.append("¡Has ganado! ¡Tienes 21!")
-            cartas_ganadas['Jugador'] += 1
-
-        if sumar_cartas(cartas_dealer) == 21:
-            resultado.append("El dealer ha ganado. Tiene 21.")
-            cartas_ganadas['Dealer'] += 1
-
-        if sumar_cartas(cartas_cpu1) == 21:
-            resultado.append("CPU 1 ha ganado. Tiene 21.")
-            cartas_ganadas['CPU1'] += 1
-
-        if sumar_cartas(cartas_cpu2) == 21:
-            resultado.append("CPU 2 ha ganado. Tiene 21.")
-            cartas_ganadas['CPU2'] += 1
-
-        if sumar_cartas(cartas_cpu3) == 21:
-            resultado.append("CPU 3 ha ganado. Tiene 21.")
-            cartas_ganadas['CPU3'] += 1
-
-        if resultado:
-            messagebox.showinfo("Resultado", "\n".join(resultado))
-            nueva_partida()
-
     def pedir_carta():
         if sumar_cartas(cartas_jugador) < 21:
             carta = extraer_carta()
@@ -267,6 +198,73 @@ def main(raiz_view, saldo):
         tabla_cartas_ganadas.delete(1.0, tk.END)
         for jugador, cartas in cartas_ganadas.items():
             tabla_cartas_ganadas.insert(tk.END, f"{jugador}: {cartas}\n")
+    def nueva_partida():
+        global baraja, cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3, cartas_ganadas, rondas_ganadas, numero_ronda
+        baraja = baraja_inicial.copy()
+        cartas_jugador = []
+        cartas_dealer = []
+        cartas_cpu1 = []
+        cartas_cpu2 = []
+        cartas_cpu3 = []
+        cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
+        rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
+        numero_ronda += 1
+        habilitar_botones()
+        repartir_cartas_iniciales()
+        ocultar_cartas_cpu()  # Nueva línea para ocultar las cartas de los CPU
+        actualizar_labels()
+
+    def habilitar_botones():
+        button_pedir["state"] = "active"
+        button_plantarse["state"] = "active"
+        if numero_ronda < 30:
+            button_nueva_partida["state"] = "disabled"
+        else:
+            button_nueva_partida["state"] = "active"
+
+    def repartir_cartas_iniciales():
+        global cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3
+
+        cartas_jugador = [extraer_carta(), extraer_carta()]
+        cartas_dealer = [extraer_carta(), extraer_carta()]
+        cartas_cpu1 = [extraer_carta(), extraer_carta()]
+        cartas_cpu2 = [extraer_carta(), extraer_carta()]
+        cartas_cpu3 = [extraer_carta(), extraer_carta()]
+
+        if sumar_cartas(cartas_jugador) == 21 or sumar_cartas(cartas_dealer) == 21 or sumar_cartas(cartas_cpu1) == 21 or sumar_cartas(cartas_cpu2) == 21 or sumar_cartas(cartas_cpu3) == 21:
+            determinar_ganador_21()
+        else:
+            actualizar_labels()
+
+    def determinar_ganador_21():
+        global cartas_jugador, cartas_dealer, cartas_cpu1, cartas_cpu2, cartas_cpu3
+        resultado = []
+
+        if sumar_cartas(cartas_jugador) == 21:
+            resultado.append("¡Has ganado! ¡Tienes 21!")
+            cartas_ganadas['Jugador'] += 1
+
+        if sumar_cartas(cartas_dealer) == 21:
+            resultado.append("El dealer ha ganado. Tiene 21.")
+            cartas_ganadas['Dealer'] += 1
+
+        if sumar_cartas(cartas_cpu1) == 21:
+            resultado.append("CPU 1 ha ganado. Tiene 21.")
+            cartas_ganadas['CPU1'] += 1
+
+        if sumar_cartas(cartas_cpu2) == 21:
+            resultado.append("CPU 2 ha ganado. Tiene 21.")
+            cartas_ganadas['CPU2'] += 1
+
+        if sumar_cartas(cartas_cpu3) == 21:
+            resultado.append("CPU 3 ha ganado. Tiene 21.")
+            cartas_ganadas['CPU3'] += 1
+
+        if resultado:
+            messagebox.showinfo("Resultado", "\n".join(resultado))
+            nueva_partida()
+
+    # ... (Resto del código)
 
     # Crear botones
     button_pedir = tk.Button(root, text="Pedir Carta", font=button_font, command=pedir_carta, bg="#2ECC71")  # Verde
@@ -288,4 +286,3 @@ def main(raiz_view, saldo):
 
     # Bucle principal de la interfaz gráfica
     root.mainloop()
-

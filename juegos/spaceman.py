@@ -42,7 +42,7 @@ def hashear(game_hash):
 def crear_lista_hashes_y_results():
 
     #Creación de la lista de los hashes y de los juegos:
-    lista_variaciones_string_original = ["god", "genio", "inteligente", "prodigio", "pro"]
+    lista_variaciones_string_original = ["god", "genio", "inteligente", "prodigio", "pro", "maestro", "increible"]
     num_random = random.randint(0, len(lista_variaciones_string_original)-1) #Da un numero aleatorio de 0 al numero de variaciones
     string_original = f"Mendivelso es {lista_variaciones_string_original[num_random]}" #Se hacen variaciones para que los juegos no sean siempre iguales
     hashi = hashear(string_original)

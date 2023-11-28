@@ -54,9 +54,11 @@ def astronaut():
     informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {round(saldo, 2)}")
     
 def sicBo():
-    global saldo
-    SicBo.main(raiz, saldo)
-    
+    global saldo, cedula
+    SicBo.main(raiz, saldo, cedula)
+    #archivos_csv.modificar_csv("Dinero_SicBo", round(saldo-saldoi,2))
+    #informacion_usuario.config(text= f"Usuario: {cedula} \n Saldo: {round(saldo, 2)}")
+
 def blackJack():
     global saldo
     black_jack.main(raiz, saldo)
@@ -103,6 +105,6 @@ boton_salir = Button(raiz, text="SALIR", command=salir, height=5, width=20, bg="
 boton_mostrar_stats = Button(raiz, text="Ver tus \nestadísticas", command=stats, height=5, width=20)
 boton_mostrar_stats_juego = Button(raiz, text="Ver el promedio\nde ganancia por juego", command=stats_juego, height=5, width=20)
 boton_salir.place(x = 100, y = 100)
-#boton_listo.place(x = 550, y = 210) ##############################################
+boton_listo.place(x = 550, y = 210) ##############################################
 
 raiz.mainloop() #Hace que la ventana siga abierta
