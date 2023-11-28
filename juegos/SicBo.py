@@ -7,8 +7,8 @@ def main(raiz_view, saldo):
     # Cargar la base de datos
     base_datos = pd.read_csv('base_datos.csv')
 
-
-    jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_juego2': 0} for _, nombre, cedula, _, dinero_inicial in base_datos.itertuples(index=False)}
+    # Crear el diccionario de jugadores
+    jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_SicBo': 0} for _, nombre, cedula, _, dinero_inicial, _, _, _, _, _ in base_datos.itertuples(index=False)}
 
     # Crear listas para cédulas y nombres ordenadas por cédula
     cedulas_ordenadas = sorted(jugadores.keys())
@@ -32,10 +32,10 @@ def main(raiz_view, saldo):
     def realizar_apuesta():
         global num_jugador_actual, ronda_actual
         try:
-            apuesta_dinero = int(apuesta_entry_dinero.get().strip())
-            if 40000 <= apuesta_dinero <= 160000:
+            apuesta_dinero = float(apuesta_entry_dinero.get().strip())  # Cambiado a float
+            if 40000.0 <= apuesta_dinero <= 160000.0:
                 jugadores[cedula]['Dinero_inicial'] -= apuesta_dinero
-                jugadores[cedula]['Dinero_juego2'] += apuesta_dinero
+                jugadores[cedula]['Dinero_SicBo'] += apuesta_dinero
                 apuesta = int(apuesta_entry.get().strip())
                 if 4 <= apuesta <= 18:
                     jugadores[cedula]['Apuesta'] = apuesta
@@ -62,7 +62,7 @@ def main(raiz_view, saldo):
             monto_por_ganador = total_apuesta / len(ganadores)
             for ganador in ganadores:
                 jugadores[ganador]['Dinero_inicial'] += monto_por_ganador
-                jugadores[ganador]['Dinero_juego2'] -= monto_por_ganador
+                jugadores[ganador]['Dinero_SicBo'] -= monto_por_ganador
                 tablero_text.insert(tk.END, f"{jugadores[ganador]['Nombre']} gana {monto_por_ganador} puntos en la ronda {ronda_actual}!\n")
         else:
             tablero_text.insert(tk.END, f"Nadie ha acertado en esta ronda, no hay ganadores.\n")
@@ -74,8 +74,8 @@ def main(raiz_view, saldo):
         ronda_actual = 1
         num_jugador_actual = 0
         for cedula in jugadores:
-            jugadores[cedula]['Dinero_inicial'] = 5000  # Reinicia el dinero inicial a 5000
-            jugadores[cedula]['Dinero_juego2'] = 0
+            jugadores[cedula]['Dinero_inicial'] = 5000.0  # Reinicia el dinero inicial a 5000
+            jugadores[cedula]['Dinero_SicBo'] = 0.0
         actualizar_labels()
         apuesta_entry_dinero.delete(0, tk.END)
         apuesta_entry.delete(0, tk.END)
@@ -86,14 +86,14 @@ def main(raiz_view, saldo):
         # Actualizar la base de datos antes de salir
         for cedula in jugadores:
             base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_inicial'] = jugadores[cedula]['Dinero_inicial']
-            base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_juego2'] = jugadores[cedula]['Dinero_juego2']
+            base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_SicBo'] = jugadores[cedula]['Dinero_SicBo']
         base_datos.to_csv('base_datos.csv', index=False)
         root.destroy()
 
     def mostrar_puntuaciones():
         tablero_text.insert(tk.END, "\nTabla de Puntuaciones:\n")
         for cedula in jugadores:
-            tablero_text.insert(tk.END, f"{jugadores[cedula]['Nombre']} - Dinero Inicial: {jugadores[cedula]['Dinero_inicial']} - Dinero Juego 2: {jugadores[cedula]['Dinero_juego2']}\n")
+            tablero_text.insert(tk.END, f"{jugadores[cedula]['Nombre']} - Dinero Inicial: {jugadores[cedula]['Dinero_inicial']} - Dinero Sic Bo: {jugadores[cedula]['Dinero_SicBo']}\n")
 
     def finalizar_juego():
         tablero_text.insert(tk.END, "\nJuego finalizado. Puntuaciones finales:\n")
@@ -132,7 +132,7 @@ def main(raiz_view, saldo):
     apuesta_entry = tk.Entry(root)
     apuesta_entry.pack()
 
-    apostar_button = tk.Button(root, text="Apostar", command=realizar_apuesta)
+    apostar_button = tk.Button(root, text="Apostar", command=realizar_apuesta, state=tk.DISABLED)
     apostar_button.pack()
 
     # Área de texto
