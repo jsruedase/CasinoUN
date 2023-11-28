@@ -17,34 +17,6 @@ num_jugador_actual = 0
 rondas_totales = 10
 ronda_actual = 1
 
-def registrar_jugadores():
-    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-    try:
-        num_jugadores_registrados = int(num_players_entry.get())
-        jugadores_registrados = []
-        registrar_button.config(state=tk.NORMAL)  # Habilitar el botón de registrar jugador
-        registrar_jugador()
-    except ValueError:
-        messagebox.showerror("Error", "Por favor, ingresa un número válido para el número de jugadores.")
-
-def registrar_jugador():
-    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-    if num_jugador_actual < num_jugadores_registrados:
-        cedula = cedula_entry.get().strip()
-        if cedula in jugadores and cedula not in jugadores_registrados:
-            jugadores_registrados.append(cedula)
-            num_jugador_actual += 1
-            cedula_entry.delete(0, tk.END)
-            if num_jugador_actual == num_jugadores_registrados:
-                iniciar_juego()
-            else:
-                registrar_jugador()
-        else:
-            messagebox.showerror("Error", "La cédula no está registrada o ya se ha registrado. Inténtalo de nuevo.")
-    else:
-        messagebox.showinfo("Información", "Todos los jugadores han sido registrados.")
-        registrar_button.config(state=tk.DISABLED)  # Inhabilitar el botón de registrar jugador cuando todos están registrados
-
 def iniciar_juego():
     global num_jugador_actual
     actualizar_labels()
@@ -61,25 +33,18 @@ def realizar_apuesta():
     try:
         apuesta_dinero = int(apuesta_entry_dinero.get().strip())
         if 40000 <= apuesta_dinero <= 160000:
-            jugadores[jugadores_registrados[num_jugador_actual]]['Dinero_inicial'] -= apuesta_dinero
-            jugadores[jugadores_registrados[num_jugador_actual]]['Dinero_juego2'] += apuesta_dinero
+            jugadores[cedula]['Dinero_inicial'] -= apuesta_dinero
+            jugadores[cedula]['Dinero_juego2'] += apuesta_dinero
             apuesta = int(apuesta_entry.get().strip())
             if 4 <= apuesta <= 18:
-                jugadores[jugadores_registrados[num_jugador_actual]]['Apuesta'] = apuesta
-                num_jugador_actual += 1
-
-                if num_jugador_actual == len(jugadores_registrados):
-                    resultado = lanzar_dados()
-                    verificar_apuestas(resultado)
-                    num_jugador_actual = 0
-                    ronda_actual += 1
-                    if ronda_actual > rondas_totales:
-                        finalizar_juego()
-                    else:
-                        actualizar_labels()
+                jugadores[cedula]['Apuesta'] = apuesta
+                resultado = lanzar_dados()
+                verificar_apuestas(resultado)
+                ronda_actual += 1
+                if ronda_actual > rondas_totales:
+                    finalizar_juego()
                 else:
-                    apuesta_entry.delete(0, tk.END)
-                    apuesta_label.config(text=f"Apuesta {jugadores_registrados[num_jugador_actual]} - Ronda {ronda_actual}:")
+                    actualizar_labels()
             else:
                 messagebox.showerror("Error", "La apuesta debe estar entre 4 y 18.")
         else:
@@ -89,8 +54,8 @@ def realizar_apuesta():
 
 def verificar_apuestas(resultado):
     tablero_text.delete(1.0, tk.END)
-    ganadores = [cedula for cedula in jugadores_registrados if jugadores[cedula]['Apuesta'] == resultado]
-    total_apuesta = sum(jugadores[cedula]['Apuesta'] for cedula in jugadores_registrados)
+    ganadores = [cedula for cedula in jugadores if jugadores[cedula]['Apuesta'] == resultado]
+    total_apuesta = sum(jugadores[cedula]['Apuesta'] for cedula in jugadores)
 
     if ganadores:
         monto_por_ganador = total_apuesta / len(ganadores)
@@ -105,7 +70,7 @@ def verificar_apuestas(resultado):
 
 def mostrar_puntuaciones():
     tablero_text.insert(tk.END, "\nTabla de Puntuaciones:\n")
-    for cedula in jugadores_registrados:
+    for cedula in jugadores:
         tablero_text.insert(tk.END, f"{jugadores[cedula]['Nombre']} - Dinero Inicial: {jugadores[cedula]['Dinero_inicial']} - Dinero Juego 2: {jugadores[cedula]['Dinero_juego2']}\n")
 
 def finalizar_juego():
@@ -113,36 +78,8 @@ def finalizar_juego():
     mostrar_puntuaciones()
     apostar_button["state"] = tk.DISABLED
 
-def jugar_nuevamente():
-    global ronda_actual, num_jugador_actual
-    ronda_actual = 1
-    num_jugador_actual = 0
-    jugadores.clear()
-    actualizar_labels()
-    num_players_entry.delete(0, tk.END)
-    apuesta_entry_dinero.delete(0, tk.END)
-    apuesta_entry.delete(0, tk.END)
-    tablero_text.delete(1.0, tk.END)
-    iniciar_registro()
-
-def salir():
-    # Actualizar la base de datos antes de salir
-    for cedula in jugadores:
-        base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_inicial'] = jugadores[cedula]['Dinero_inicial']
-        base_datos.loc[base_datos['Cedula'] == int(cedula), 'Dinero_juego2'] = jugadores[cedula]['Dinero_juego2']
-    base_datos.to_csv('base_datos.csv', index=False)
-    root.destroy()
-
 def actualizar_labels():
-    apuesta_label.config(text=f"Apuesta {jugadores_registrados[num_jugador_actual]} - Ronda {ronda_actual}:")
-
-def iniciar_registro():
-    global num_jugador_actual
-    num_jugador_actual = 0
-    num_players_entry.config(state=tk.NORMAL)
-    cedula_entry.config(state=tk.NORMAL)
-    registrar_button.config(state=tk.NORMAL)
-    registrar_button.pack()
+    apuesta_label.config(text=f"Apuesta - Ronda {ronda_actual}:")
 
 # Crear la ventana principal
 root = tk.Tk()
@@ -150,29 +87,6 @@ root.title("Sic Bo Game")
 root.geometry("400x400")
 
 # Etiquetas
-num_players_label = tk.Label(root, text="Ingrese el número de jugadores:")
-num_players_label.pack()
-
-num_players_entry = tk.Entry(root)
-num_players_entry.pack()
-
-# Registro de jugadores
-cedula_label = tk.Label(root, text="Ingrese su cédula:")
-cedula_label.pack()
-
-cedula_entry = tk.Entry(root)
-cedula_entry.pack()
-
-registrar_button = tk.Button(root, text="Registrar Jugador", command=registrar_jugador, state=tk.DISABLED)
-registrar_button.pack()
-
-# Botones adicionales
-iniciar_registro_button = tk.Button(root, text="Iniciar Registro", command=iniciar_registro)
-iniciar_registro_button.pack()
-
-iniciar_juego_button = tk.Button(root, text="Iniciar Juego", command=registrar_jugadores, state=tk.DISABLED)
-iniciar_juego_button.pack()
-
 dados_label = tk.Label(root, text="¡Bienvenido a Sic Bo!")
 dados_label.pack()
 
@@ -205,15 +119,15 @@ salir_button.pack()
 # Función para aplicar estilos de casino
 def aplicar_estilos_casino():
     root.configure(bg='#1E2124')  # Color de fondo oscuro
-    etiquetas = [num_players_label, cedula_label, dados_label, apuesta_label_dinero, apuesta_label]
+    etiquetas = [dados_label, apuesta_label_dinero, apuesta_label]
     for etiqueta in etiquetas:
         etiqueta.configure(fg='white', bg='#1E2124')  # Texto blanco sobre fondo oscuro
 
-    entradas = [num_players_entry, cedula_entry, apuesta_entry_dinero, apuesta_entry]
+    entradas = [apuesta_entry_dinero, apuesta_entry]
     for entrada in entradas:
         entrada.configure(fg='black', bg='white')  # Texto negro sobre fondo claro
 
-    botones = [registrar_button, iniciar_registro_button, iniciar_juego_button, apostar_button, jugar_nuevamente_button, salir_button]
+    botones = [apostar_button, jugar_nuevamente_button, salir_button]
     for boton in botones:
         boton.configure(fg='white', bg='#4CAF50')  # Texto blanco sobre fondo verde
 
@@ -224,3 +138,4 @@ aplicar_estilos_casino()
 
 # Iniciar el bucle principal
 root.mainloop()
+
