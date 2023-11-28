@@ -12,16 +12,6 @@ def main(raiz_view, saldo):
 
     baraja_inicial = baraja.copy()
 
-    cartas_jugador = []
-    cartas_dealer = []
-    cartas_cpu1 = []
-    cartas_cpu2 = []
-    cartas_cpu3 = []
-
-    cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-    rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
-    numero_ronda = 1
-
     # Crear la ventana principal
     root = tk.Toplevel(raiz_view)
     root.title("Blackjack Game")
@@ -35,8 +25,10 @@ def main(raiz_view, saldo):
     cartas_cpu1 = []
     cartas_cpu2 = []
     cartas_cpu3 = []
+    global cartas_ganadas
     cartas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
     rondas_ganadas = {'Jugador': 0, 'Dealer': 0, 'CPU1': 0, 'CPU2': 0, 'CPU3': 0}
+    global numero_ronda
     numero_ronda = 1
 
     # Interfaz gráfica
