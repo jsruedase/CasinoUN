@@ -7,7 +7,7 @@ import random
 base_datos = pd.read_csv('base_datos.csv')
 
 # Crear el diccionario de jugadores
-jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_juego2': 0} for _, nombre, cedula, _, dinero_inicial, _, _, _, _, _, _ in base_datos.itertuples(index=False)}
+jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_juego2': 0} for _, nombre, cedula, _, dinero_inicial, _, _, _, _, _ in base_datos.itertuples(index=False)}
 
 # Crear listas para cédulas y nombres ordenadas por cédula
 cedulas_ordenadas = sorted(jugadores.keys())
@@ -18,33 +18,32 @@ rondas_totales = 10
 ronda_actual = 1
 
 def registrar_jugadores():
-  global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-  try:
-      num_jugadores_registrados = int(num_players_entry.get())
-      jugadores_registrados = []
-      registrar_button.config(state=tk.NORMAL)  # Habilitar el botón de registrar jugador
-      registrar_jugador()
-  except ValueError:
-      messagebox.showerror("Error", "Por favor, ingresa un número válido para el número de jugadores.")
+    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
+    try:
+        num_jugadores_registrados = int(num_players_entry.get())
+        jugadores_registrados = []
+        registrar_button.config(state=tk.NORMAL)  # Habilitar el botón de registrar jugador
+        registrar_jugador()
+    except ValueError:
+        messagebox.showerror("Error", "Por favor, ingresa un número válido para el número de jugadores.")
 
 def registrar_jugador():
-  global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
-  if num_jugador_actual < num_jugadores_registrados:
-      cedula = cedula_entry.get().strip()
-      if cedula in jugadores and cedula not in jugadores_registrados:
-          jugadores_registrados.append(cedula)
-          num_jugador_actual += 1
-          cedula_entry.delete(0, tk.END)
-          if num_jugador_actual == num_jugadores_registrados:
-              iniciar_juego()
-          else:
-              registrar_jugador()
-      else:
-          messagebox.showerror("Error", "La cédula no está registrada o ya se ha registrado. Inténtalo de nuevo.")
-  else:
-      messagebox.showinfo("Información", "Todos los jugadores han sido registrados.")
-      registrar_button.config(state=tk.DISABLED)  # Inhabilitar el botón de registrar jugador cuando todos están registrados
-
+    global num_jugador_actual, num_jugadores_registrados, jugadores_registrados
+    if num_jugador_actual < num_jugadores_registrados:
+        cedula = cedula_entry.get().strip()
+        if cedula in jugadores and cedula not in jugadores_registrados:
+            jugadores_registrados.append(cedula)
+            num_jugador_actual += 1
+            cedula_entry.delete(0, tk.END)
+            if num_jugador_actual == num_jugadores_registrados:
+                iniciar_juego()
+            else:
+                registrar_jugador()
+        else:
+            messagebox.showerror("Error", "La cédula no está registrada o ya se ha registrado. Inténtalo de nuevo.")
+    else:
+        messagebox.showinfo("Información", "Todos los jugadores han sido registrados.")
+        registrar_button.config(state=tk.DISABLED)  # Inhabilitar el botón de registrar jugador cuando todos están registrados
 
 def iniciar_juego():
     global num_jugador_actual
@@ -202,6 +201,26 @@ jugar_nuevamente_button.pack()
 
 salir_button = tk.Button(root, text="Salir", command=salir)
 salir_button.pack()
+
+# Función para aplicar estilos de casino
+def aplicar_estilos_casino():
+    root.configure(bg='#1E2124')  # Color de fondo oscuro
+    etiquetas = [num_players_label, cedula_label, dados_label, apuesta_label_dinero, apuesta_label]
+    for etiqueta in etiquetas:
+        etiqueta.configure(fg='white', bg='#1E2124')  # Texto blanco sobre fondo oscuro
+
+    entradas = [num_players_entry, cedula_entry, apuesta_entry_dinero, apuesta_entry]
+    for entrada in entradas:
+        entrada.configure(fg='black', bg='white')  # Texto negro sobre fondo claro
+
+    botones = [registrar_button, iniciar_registro_button, iniciar_juego_button, apostar_button, jugar_nuevamente_button, salir_button]
+    for boton in botones:
+        boton.configure(fg='white', bg='#4CAF50')  # Texto blanco sobre fondo verde
+
+    tablero_text.configure(fg='white', bg='#1E2124')  # Texto blanco sobre fondo oscuro
+
+# Aplicar estilos de casino
+aplicar_estilos_casino()
 
 # Iniciar el bucle principal
 root.mainloop()
