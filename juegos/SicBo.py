@@ -7,8 +7,8 @@ def main(raiz_view, saldo):
     # Cargar la base de datos
     base_datos = pd.read_csv('base_datos.csv')
 
-    # Crear el diccionario de jugadores
-    jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_juego2': 0} for _, nombre, cedula, _, dinero_inicial, _, _, _, _, _ in base_datos.itertuples(index=False)}
+
+    jugadores = {cedula: {'Nombre': nombre, 'Dinero_inicial': dinero_inicial, 'Dinero_juego2': 0} for _, nombre, cedula, _, dinero_inicial in base_datos.itertuples(index=False)}
 
     # Crear listas para cédulas y nombres ordenadas por cédula
     cedulas_ordenadas = sorted(jugadores.keys())
@@ -120,13 +120,19 @@ def main(raiz_view, saldo):
     apuesta_entry_dados = tk.Entry(root)
     apuesta_entry_dados.pack()
 
-    apuesta_label_dinero = tk.Label(root, text="Ingrese su apuesta de dinero:")
+    apuesta_label_dinero = tk.Label(root, text="Ingrese su apuesta de dinero (40000-160000):")
     apuesta_label_dinero.pack()
 
     apuesta_entry_dinero = tk.Entry(root)
     apuesta_entry_dinero.pack()
 
-    apostar_button = tk.Button(root, text="Apostar", command=realizar_apuesta, state=tk.DISABLED)
+    apuesta_label = tk.Label(root, text="Apuesta:")
+    apuesta_label.pack()
+
+    apuesta_entry = tk.Entry(root)
+    apuesta_entry.pack()
+
+    apostar_button = tk.Button(root, text="Apostar", command=realizar_apuesta)
     apostar_button.pack()
 
     # Área de texto
@@ -162,3 +168,4 @@ def main(raiz_view, saldo):
 
     # Iniciar el bucle principal
     root.mainloop()
+
